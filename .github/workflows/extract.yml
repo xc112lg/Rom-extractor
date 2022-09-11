@@ -1,0 +1,70 @@
+name: Rom-Extractor
+ 
+on:
+  workflow_dispatch:
+    inputs:
+      ROM_URL:
+        description: 'ROM_URL'
+        required: true
+    
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+       - name: Checkouts
+         uses: actions/checkout@v2
+   
+       - name: EnvSetup
+         run: |
+              sudo apt install python3 brotli aria2 curl -y
+              mkdir Rom
+              mkdir Rom/Unzip
+
+       - name: Download Rom
+         working-directory: Rom
+         run: |
+              aria2c ${{ github.event.inputs.ROM_LINK }}
+
+       - name: Unzip Rom
+         working-directory: Rom
+         run: |
+              unzip *.zip -d Unzip
+
+       - name: SetupVars
+         working-directory: Rom
+         run: |
+              git config --global user.name "shazuxD"
+              git config --global user.email "shazuxd7@gmail.com"
+              echo "${{ secrets.BOT_TOKEN }}" > .tg_token
+              echo "${{ secrets.CHAT_ID }}" > .tg_chat
+
+       - name: clone tools
+         working-directory: Rom
+         run: |
+              wget https://raw.githubusercontent.com/ShazuxD7/dat2img/master/sdat2img.py
+              wget https://raw.githubusercontent.com/ShazuxD7/dat2img/master/vdat2img.py
+        
+       - name: convert br to dat
+         working-directory: Rom/Unzip
+         run: |
+              brotli -d system.new.dat.br
+              brotli -d vendor.new.dat.br
+       
+       - name: Convert new.dat to img
+         working-directory: Rom
+         run: |
+              python3 sdat2img.py Unzip/system.transfer.list Unzip/system.new.dat system.img
+              python3 vdat2img.py Unzip/vendor.transfer.list Unzip/vendor.new.dat vendor.img
+       
+       - name: Upload
+         working-directory: Rom
+         run: |
+              curl -sL https://git.io/file-transfer | sh
+              ./transfer wet boot*.img
+              ./transfer wet system*.img
+              ./transfer wet vendor*.img

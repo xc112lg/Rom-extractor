@@ -28,7 +28,7 @@ jobs:
        - name: Download Rom
          working-directory: Rom
          run: |
-              aria2c https://mirrors.vijaymalav6969.workers.dev/0:/Tg/Arrow-v13.0-RMX1801-UNOFFICIAL-20220907-GAPPS.zip
+              aria2c ${{ github.event.inputs.ROM_URL }}
 
        - name: Unzip Rom
          working-directory: Rom
@@ -65,6 +65,7 @@ jobs:
          working-directory: Rom
          run: |
               curl -sL https://git.io/file-transfer | sh
+              cp Unzip/boot.img ../
               ./transfer wet boot*.img
               ./transfer wet system*.img
               ./transfer wet vendor*.img

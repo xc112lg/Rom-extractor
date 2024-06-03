@@ -46,7 +46,7 @@ jobs:
        - name: clone tools
          working-directory: Rom
          run: |
-              wget https://raw.githubusercontent.com/ShazuxD7/dat2img/master/sdat2img.py
+              wget https://raw.githubusercontent.com/xpirt/sdat2img/master/sdat2img.py
               wget https://raw.githubusercontent.com/ShazuxD7/dat2img/master/vdat2img.py
         
        - name: convert br to dat
